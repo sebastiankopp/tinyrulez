@@ -20,8 +20,20 @@
  */
 package de.sebastiankopp.tinyrulez.bv;
 
-import de.sebastiankopp.tinyrulez.core.Rule;
+/**
+ * @author sebi
+ *
+ */
+public class SthToBeValidated {
+	
+	@Conformous(name="decimal")
+	private final String s;
+	
+	/**
+	 * 
+	 */
+	public SthToBeValidated(String s) {
+		this.s = s;
+	}
 
-public interface RuleProvider {
-	Rule<?> getRuleByName(String ruleName);
 }

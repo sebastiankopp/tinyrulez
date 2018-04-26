@@ -20,8 +20,30 @@
  */
 package de.sebastiankopp.tinyrulez.bv;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import de.sebastiankopp.tinyrulez.core.Rule;
 
-public interface RuleProvider {
-	Rule<?> getRuleByName(String ruleName);
+/**
+ * @author sebi
+ *
+ */
+//@MetaInfServices // does not work for test sources
+public class DummyRuleProvider implements RuleProvider {
+
+	private static final Map<String,Supplier<? extends Rule<?>>> rules = new HashMap<>();
+	
+	public static void addRule(String name, Supplier<? extends Rule<?>> rule) {
+		rules.put(name, rule);
+	}
+	
+	@Override
+	public Rule<?> getRuleByName(String ruleName) {
+		final Supplier<? extends Rule<?>> supplier = rules.get(ruleName);
+		return supplier != null ? supplier.get() : null;
+	}
+	
+
 }
