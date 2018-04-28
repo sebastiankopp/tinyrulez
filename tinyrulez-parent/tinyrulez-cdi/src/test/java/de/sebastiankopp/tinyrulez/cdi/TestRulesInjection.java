@@ -21,8 +21,19 @@
 
 package de.sebastiankopp.tinyrulez.cdi;
 
-import java.util.UUID;
+import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.joining;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.UUID;
+import java.util.logging.LogManager;
+
+import javax.enterprise.inject.spi.CDI;
+import javax.enterprise.inject.spi.CDIProvider;
 import javax.inject.Inject;
 import javax.validation.ValidationException;
 
@@ -42,6 +53,7 @@ public class TestRulesInjection extends Arquillian {
 	
 	@Deployment
 	public static JavaArchive deploy() {
+		evaluateCDIProviders();
 		String beansXml = Descriptors.create(BeansDescriptor.class)
 				.beanDiscoveryMode("all")
 				.exportAsString();
@@ -60,5 +72,33 @@ public class TestRulesInjection extends Arquillian {
 		clientBean.gimmeSomething("hans");
 	}
 	
+	private static void evaluateCDIProviders() {
+		try {
+			final String jClassPath = System.getProperty("java.class.path");
+			System.out.println("Java class path: " + stream(jClassPath.split(":"))
+					.filter(s -> s.toLowerCase().endsWith(".jar") || s.toLowerCase().endsWith(".zip"))
+					.collect(joining(" ")));
+			System.out.println();
+			Enumeration<URL> resources = CDI.class.getClassLoader().getResources("META-INF/services/" + CDIProvider.class.getName());
+			while (resources.hasMoreElements()) {
+				InputStream inputStream = resources.nextElement().openStream();
+				System.out.println("Read next Metainf-Services-Entry for CDIProvider: " + new String(readInstr(inputStream)));
+			}
+		} catch (IOException e) {
+			System.err.print("io operation failed: ");
+			e.printStackTrace(System.err);
+		}
+	}
+	
+	private static byte[] readInstr(InputStream stream) throws IOException {
+		try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+			byte[] buf = new byte[16384];
+			int count = 0;
+			while((count = stream.read(buf)) > 0) {
+				baos.write(buf, 0, count);
+			}
+			return baos.toByteArray();
+		}
+	}
 	
 }
