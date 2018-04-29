@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.sebastiankopp.tinyrulez</groupId>
-		<artifactId>tinyrulez-parent</artifactId>
+		<artifactId>tinyrulez-jee7</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>tinyrulez-cdi</artifactId>

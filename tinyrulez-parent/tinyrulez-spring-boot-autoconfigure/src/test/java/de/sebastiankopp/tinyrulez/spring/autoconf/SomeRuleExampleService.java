@@ -20,23 +20,17 @@
  */
 package de.sebastiankopp.tinyrulez.spring.autoconf;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
-@Configuration
-public class TinyrulezConfig {
+import de.sebastiankopp.tinyrulez.bv.Conformous;
 
-	@Bean(name="appCtxProvider")
-	public ApplicationContextProvider appCtxProvider() {
-		return new ApplicationContextProvider();
+@Component
+@Validated
+public class SomeRuleExampleService {
+
+	public void consumeString(@Conformous(name="strRule") String param) {
+		System.out.println(param);
 	}
-	
-	@Bean
-	public LocalValidatorFactoryBean localValidatorFactoryBean() {
-		return new LocalValidatorFactoryBean();
-	}
-	
-	
 	
 }

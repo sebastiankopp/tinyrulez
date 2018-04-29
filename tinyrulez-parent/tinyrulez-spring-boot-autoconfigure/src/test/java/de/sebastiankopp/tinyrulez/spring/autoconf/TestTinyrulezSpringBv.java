@@ -20,39 +20,32 @@
  */
 package de.sebastiankopp.tinyrulez.spring.autoconf;
 
-import static org.testng.Assert.assertEquals;
+import javax.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import de.sebastiankopp.tinyrulez.core.Rule;
-import de.sebastiankopp.tinyrulez.core.ValidationResult;
-
-@SpringBootTest(classes= {TinyrulezConfig.class, RulesFactory.class})
-public class TestValidateRules extends AbstractTestNGSpringContextTests {
+/**
+ * @author sebastian
+ *
+ */
+@SpringBootTest(classes= {RulesFactory.class, TinyrulezConfig.class, SomeRuleExampleService.class})
+@EnableAutoConfiguration
+public class TestTinyrulezSpringBv extends AbstractTestNGSpringContextTests {
 
 	@Autowired
-	@Qualifier("strRule")
-	Rule<String> validationRule;
+	SomeRuleExampleService ruleExampleService;
 	
-	@Test(dataProvider="dp1", dataProviderClass=TestValidateRules.class)
-	public void test(String val, boolean expResult) {
-		ValidationResult result1 = validationRule.test(val);
-		assertEquals(result1.isResultPositive(), expResult);
+	@Test(expectedExceptions=ConstraintViolationException.class)
+	public void testInvalidMaterial() {
+		ruleExampleService.consumeString("lala34555");
 	}
 	
-	@DataProvider(name="dp1")
-	public static Object[][] provideData() {
-		return new Object [][] {
-			new Object[] {"abababsafdgaf", false},
-			new Object[] {"123", true},
-			new Object[] {"abab", false},
-			new Object[] {"12345678912", false},
-			new Object[] {"a23", false}
-		};
+	@Test
+	public void testValidMaterial() {
+		ruleExampleService.consumeString("12345");
 	}
 	
 }
